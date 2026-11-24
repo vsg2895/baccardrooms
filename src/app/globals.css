@@ -1,0 +1,1057 @@
+/* Baccard Rooms — from sites/baccardrooms.html.
+
+   THE LOOK IS A PRIVATE CARD SALON. A deep baccarat felt, lit from above,
+   with ivory playing cards dealt onto it, a walnut table rail, brass fittings
+   and one oxblood red. Bodoni Moda — a Didone, the face a casino prints its
+   own table limits in — for every heading; Figtree for everything that is
+   read at text size.
+
+   This is the only site in the network whose PAGE IS DARK AND WHOSE CONTENT
+   IS LIGHT. Its two siblings on a dark ground (centrebetting, nongambles) put
+   paper panels on it; here the light surfaces are not panels but CARDS, and
+   the difference is the whole design: a card has a face, a back, a rounded
+   corner, printed indices and a thickness, and it sits ON the felt rather
+   than being part of it.
+
+   Four things carry it, and none of them is a thing a sibling does:
+
+     THE TABLE. The hero's top three are dealt onto a real baccarat table —
+     a container that is a 200px ARC at the top and square at the bottom,
+     inside a 10px walnut rail, inside a brass inset ring, under an inner
+     shadow that darkens its edges. No other site here has a shaped
+     container; every one of them is a rectangle with a radius.
+
+     THE PLAYING CARD. A casino is an ivory card with its RATING PRINTED AS A
+     CORNER INDEX — the figure over its suit, top-left and again bottom-right
+     rotated 180°, exactly as a real card prints its rank so it reads from
+     either end of the table. An inner hairline frame sits 10px inside the
+     edge, a 2px opaque shadow under the bottom edge reads as card stock, and
+     the whole thing lifts and tilts -0.4° on hover, like a card picked up off
+     the felt.
+
+     THE SUIT IS STABLE. The suit on a card is decoration and carries no
+     meaning — but it is derived from the casino's own SLUG, not from its
+     position in the list, so a casino wears the same suit on the home page,
+     on /casinos page 2 and in a category. A suit that changed when the
+     ordering changed would read as a property of the operator that keeps
+     moving. ♥ and ♦ print their index in oxblood, ♠ and ♣ in ink, which is
+     what a deck does.
+
+     THE ROOMS. Bonus types are numbered ROOMS in Roman numerals — Room I to
+     Room VI — which is where the brand's name is. A reader does not pick a
+     casino here and then find out what kind of bonus it has; the room comes
+     first, because the room is the thing that differs.
+
+   ── Three values do not ship as the mockup draws them ─────────────────────
+
+   THE STARS. The mockup sets a card's stars in `#B08A3E`, which is 2.82:1 on
+   the ivory — under the 3:1 a graphic needs, and the default `--brass`
+   #C9A45C is far worse at 2.06. At those ratios a filled star and an empty
+   one are the same pale smudge on cream, which is the one thing a star row
+   has to do. Stars on a card take `--color-gold` #7A5A14 (5.60 on the ivory,
+   6.36 on white), which is still an aged brass and not an orange. Stars on
+   the FELT keep the mockup's brass: 5.38 on the page, 4.33 on the table,
+   both over the 3:1 a graphic needs.
+
+   THE MUTED INK. `--muted` #7C7160 is 4.21:1 on the ivory, and it carries
+   the offer's operator name, the chip footnote and the glance sheet's column
+   heads at 12.5–14px. It ships as #6B6153, 5.34:1.
+
+   THE CONTROL BOUNDARY. `--line` #D9CDB0 is 1.39:1 on the ivory. It stays
+   exactly that for a DIVIDER between rows of a card, which is all a divider
+   has to be — but every boundary belonging to something a thumb presses
+   takes `--color-line-strong` #92805B (3.38:1). The same rule applies on the
+   felt, where the mockup draws its control edges in brass at 25–50% alpha
+   (1.52 to 2.40:1): a control's edge here is SOLID brass, 5.38:1, and only
+   the decorative section rules keep the low alphas.
+
+   And one shape does not ship as drawn: the oxblood leader flag is 1.41:1
+   against the felt, so where it overhangs the card onto the table it would
+   be a word with no pill around it. It carries a brass hairline, 5.38:1, so
+   the shape reads on both grounds it crosses.
+
+   ── The oxblood and the brass are not interchangeable ─────────────────────
+
+   OXBLOOD #8E1B2B IS A CARD COLOUR. 7.89:1 on the ivory, 8.97 under white as
+   a fill — and 1.41:1 on the felt, where it is invisible. It may be a FILL on
+   the felt (a flag, a count) because its own white text carries it, but it is
+   never text and never an edge there.
+
+   BRASS #C9A45C IS A FELT COLOUR. 5.38 / 6.41 / 4.33 on the page, the
+   header and the table — and 2.06:1 on the ivory, where it is invisible.
+
+   So `text-brand` belongs on a card and `text-accent` on the felt, and
+   putting either in the other place does not look subtly wrong, it looks
+   like the text is missing. That is deliberate: both mistakes are LOUD, and
+   a loud failure in an inverted theme is worth more than a quiet one.
+
+   ── The layering rule, again ──────────────────────────────────────────────
+
+   The four button classes and the card / chip / room / tab classes are
+   UNLAYERED, so they beat any Tailwind utility (Tailwind 4 puts its own in
+   `@layer utilities`). A `rounded-*` or `bg-*` on an element carrying one of
+   them silently does nothing. This has bitten five sibling sites. One place
+   decides. */
+
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --background: #0e3a2d;
+  --foreground: #f1e8d2;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* ── THE FELT ───────────────────────────────────────────────────────────
+     The mockup's --felt / --felt-2 / --felt-3: the page, the deeper stock of
+     the header, top bar and footer, and the raised surface of the table and
+     the banner wells. */
+  --color-felt: #0e3a2d;
+  --color-felt-deep: #0a2c22;
+  --color-felt-raised: #134a3a;
+
+  /* `cream` is TEXT ON THE FELT, not a background — the mockup's own
+     --cream. Measured on the three grounds above: 10.36 / 12.33 / 8.32,
+     8.22 / 9.78 / 6.60, 7.43 / 8.84 / 5.97. */
+  --color-cream: #f1e8d2;
+  --color-cream-soft: #d8d0bb;
+  --color-cream-muted: #cfc6ae;
+
+  /* ── THE IVORY CARD ─────────────────────────────────────────────────────
+     The mockup's --ivory / --ivory-2. `paper` is the face of a playing card
+     and the only light surface on the site. `ink` is DARK and belongs here
+     and nowhere else. */
+  --color-paper: #f6f0e1;
+  --color-paper-2: #ede4cf;
+  --color-surface: #ede4cf;
+
+  --color-ink: #1b1712;
+  --color-ink-soft: #4a4236;
+  --color-muted: #6b6153;
+  --color-faint: #6b6153;
+
+  /* The hairline between rows of a card (1.39:1 — a divider, deliberately)
+     and the control-weight line for anything a thumb presses (3.38:1). */
+  --color-line: #d9cdb0;
+  --color-line-soft: #d9cdb0;
+  --color-line-strong: #92805b;
+
+  /* ── OXBLOOD — the house colour, and a CARD colour ──────────────────────
+     7.89:1 as text on the ivory, 10.43 for the deeper step, and 8.97 /
+     11.86 under white as a fill. See the header note: never text on felt. */
+  --color-brand: #8e1b2b;
+  --color-brand-btn: #8e1b2b;
+  --color-brand-dark: #6e1220;
+  --color-brand-soft: #f5e2e4;
+  --color-brand-tint: #f5e2e4;
+  --color-brand-ink: #ffffff;
+  --color-brand-shadow: rgba(142, 27, 43, 0.4);
+  --color-sea: #8e1b2b;
+
+  /* ── BRASS — the fittings, and a FELT colour ────────────────────────────
+     The mockup's --brass / --brass-lt. `accent-light` is what carries text
+     on the TABLE, where plain brass is 4.33:1 and under the 4.5 text needs;
+     ink on brass is 7.60 and on brass-light 11.39. */
+  --color-accent: #c9a45c;
+  --color-accent-light: #e6cc92;
+  --color-accent-dark: #c9a45c;
+  --color-accent-ink: #1b1712;
+  --color-brass: #c9a45c;
+  --color-brass-lt: #e6cc92;
+
+  /* The table green a chip is moulded in, and the tint a factual chip sits
+     on — the regions an operator says it accepts. 6.81:1 as text on the
+     ivory, 6.54 on its own tint, 7.75 under white as a fill. */
+  --color-green: #0c5e48;
+  --color-green-light: #e2efe5;
+  --color-matcha: #0c5e48;
+  --color-matcha-bg: #e2efe5;
+  --color-win: #0c5e48;
+  --color-win-bg: #e2efe5;
+
+  /* The one job this token has is a form-validation message, which has to be
+     a different colour from everything around it or it is not a message. On
+     this site the oxblood is already the kicker colour, so the signal is a
+     brighter, oranger red: #B3261E, 5.75:1 on the ivory. The cloned sites
+     set that message in `text-rose-400`, 2.69:1 on white. */
+  --color-red: #b3261e;
+  --color-signal: #b3261e;
+
+  /* Stars ON A CARD. A deep aged brass, not the mockup's #B08A3E — see the
+     header note. 5.60:1 on the ivory. */
+  --color-gold: #7a5a14;
+
+  /* ── The footer and every other felt-deep ground ────────────────────────
+     The mockup's own footer values, all measured on #0A2C22: #D6CEB8 9.58,
+     #BFB69E 7.45, #E6CC92 9.61. The line is decorative and stays low. */
+  --color-navy: #0a2c22;
+  --color-navy-2: #134a3a;
+  --color-night-ink: #f6f0e1;
+  --color-night-muted: #d6ceb8;
+  --color-night-faint: #bfb69e;
+  --color-night-line: #30503f;
+  --color-night-accent: #e6cc92;
+  --color-night-green: #e6cc92;
+
+  --font-sans: var(--font-figtree);
+  --font-display: var(--font-bodoni-moda);
+  --font-label: var(--font-figtree);
+  --font-mono: var(--font-figtree);
+
+  /* The face of a playing card. The mockup's `.cc` radius, and the rung the
+     shared components reach for. */
+  --radius-card: 22px;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-figtree), system-ui, Arial, Helvetica, sans-serif;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* THE LIGHT OVER THE TABLE. The mockup's `body::before`: one elliptical
+   wash of a lighter felt from the top centre, which is the only reason the
+   page does not read as a flat dark rectangle. Fixed, so it stays over the
+   table rather than scrolling with the content, and `pointer-events: none`
+   with a negative z-index so it never intercepts a click. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 0%, #17543f 0%, transparent 60%),
+    var(--color-felt);
+}
+
+/* Every heading. A DIDONE'S HAIRLINES ARE ITS WHOLE CHARACTER and also its
+   limit: below about 18px the thin strokes break up, and on a dark ground
+   they thin further because light type on dark appears narrower than the
+   reverse. So this face is used at 18px and up only, and every label, chip,
+   count and caption under that size is Figtree — which is why `--font-label`
+   is NOT the display face on this site, unlike its siblings.
+
+   600 rather than the 500 the mockup asks for in places: on the felt the
+   lighter weight loses its hairlines. 1.04 and -0.01em are the mockup's own,
+   and both matter at 88px. */
+.font-display {
+  font-family: var(--font-bodoni-moda), Didot, Georgia, serif;
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* The display face set in ITALIC, which on a Didone is a true cursive cut
+   rather than a slant — the mockup's `h1 em`, `.tl`, `.fq .q` and
+   `.room .no`. Pinned here so a `font-display` element can be made italic
+   without an `italic` utility losing to the unlayered rule above. */
+.font-display-it {
+  font-family: var(--font-bodoni-moda), Didot, Georgia, serif;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+}
+
+/* The all-caps labels: the kickers, the logo strapline, the bonus kicker on
+   a card, the glance sheet's column heads, the footer's column heads.
+   Figtree at 800, the mockup's own — see the note above about the Didone. */
+.lbl {
+  font-family: var(--font-figtree), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* A section kicker's leading rule — the mockup's `.sec-head .lbl::before`,
+   a 28px brass dash that sets the label off the margin. Decorative, so the
+   low-contrast brass is fine here and nowhere a control is. */
+.lbl-rule::before {
+  content: '';
+  display: inline-block;
+  width: 28px;
+  height: 1px;
+  margin-right: 12px;
+  vertical-align: middle;
+  background: var(--color-brass);
+}
+
+/* The suit glyphs. Georgia carries ♠♥♣♦ at a consistent weight across
+   platforms where the UI stack substitutes an emoji font and turns them into
+   colour pictures — which is exactly what must not happen to a card index. */
+.suit {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: normal;
+}
+
+:focus-visible {
+  outline-color: var(--color-brass-lt);
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────────
+   UNLAYERED, so a `bg-*` or `rounded-*` utility on the element loses to these
+   — see the header note. Four of them, because this site has two grounds and
+   each needs a primary and a secondary:
+
+     .btn-or       oxblood on white text   — the primary ON A CARD
+     .btn-ln       ink outline             — the secondary ON A CARD
+     .btn-gold     brass on ink text       — the primary ON THE FELT
+     .btn-on-dark  brass outline           — the secondary ON THE FELT
+
+   The mockup's `.btn`: a full pill, 54px tall, 16px bold. Nothing lifts,
+   presses or offsets — a chip pushed across a felt makes no shadow, and the
+   only state change is the fill, which is also the cheapest one to paint. */
+.btn-or,
+.btn-ln,
+.btn-gold,
+.btn-on-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 54px;
+  padding: 0 30px;
+  border-radius: 999px;
+  font-family: var(--font-figtree), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn-or {
+  background: var(--color-brand-btn);
+  color: #ffffff;
+  border: 1.5px solid var(--color-brand-btn);
+}
+.btn-or:hover {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: #ffffff;
+}
+
+.btn-ln {
+  background: transparent;
+  color: var(--color-ink);
+  border: 1.5px solid var(--color-ink);
+}
+.btn-ln:hover {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.btn-gold {
+  background: var(--color-brass);
+  color: var(--color-accent-ink);
+  border: 1.5px solid var(--color-brass);
+}
+.btn-gold:hover {
+  background: var(--color-brass-lt);
+  border-color: var(--color-brass-lt);
+  color: var(--color-accent-ink);
+}
+
+/* The one control whose edge is its whole appearance, which is why the brass
+   here is SOLID and not the mockup's 25–50% alpha: 5.38:1 on the felt
+   against 1.52–2.40 for the alphas. Its text is brass-light (8.07:1), not
+   brass (5.38) — a button label is text and wants the headroom. */
+.btn-on-dark {
+  background: transparent;
+  color: var(--color-brass-lt);
+  border: 1.5px solid var(--color-brass);
+}
+.btn-on-dark:hover {
+  background: var(--color-brass);
+  border-color: var(--color-brass);
+  color: var(--color-accent-ink);
+}
+
+/* ── The small button ───────────────────────────────────────────────────────
+   The mockup's own `.btn-sm`: 46px tall on 20px of side padding, for a button
+   inside a card, a row or a strip rather than one in a hero.
+
+   IT HAS TO BE A CLASS, and this is the clearest example on the site of why
+   the four classes above are dangerous. They are UNLAYERED and they pin
+   `min-height: 54px` and `padding: 0 30px`, so a `min-h-[46px]`, `h-[46px]`
+   or `px-5` on the element is in `@layer utilities` and silently loses to
+   them. Every in-card button here was written with those utilities and every
+   one of them shipped at 54px with 30px gutters — which is what pushed the
+   cookie banner's two buttons 43px past the edge of their own card at 375px,
+   where `overflow-x: clip` on the body then cut the second one in half.
+
+   Nothing in the markup says a size any more. A button is either full size or
+   `.btn-sm`. */
+.btn-sm {
+  min-height: 46px;
+  padding: 0 20px;
+  font-size: 15px;
+}
+
+/* Narrower still, for two buttons sharing a phone-width row. */
+.btn-xs {
+  min-height: 44px;
+  padding: 0 14px;
+  font-size: 14px;
+}
+
+/* Kept so the shared vocabulary resolves. Nothing on this site transforms on
+   hover except a dealt card, so "flat" is already the default and this class
+   only has to not break. */
+.btn-flat,
+.btn-flat:hover {
+  transform: none;
+}
+
+/* ── THE TABLE ──────────────────────────────────────────────────────────────
+   The mockup's `.table`, and the one container in this network that is not a
+   rectangle: a 200px arc across the top, square across the bottom, which is
+   the plan of a baccarat table seen from above.
+
+   Four layers make the wood and the brass, and they have to be in this order:
+   the `border` is the walnut rail, the first inset shadow is the brass bead
+   INSIDE it, the second is the felt darkening at the edges under the lamp,
+   and the outer shadow is the table standing off the floor.
+
+   `border-radius` takes the two-value form so the arc only applies to the
+   top corners; a `border` follows a radius, so the rail curves with it. */
+.felt-table {
+  position: relative;
+  background: var(--color-felt-raised);
+  border: 10px solid #3b2617;
+  border-radius: 200px 200px 28px 28px;
+  box-shadow:
+    inset 0 0 0 2px var(--color-brass),
+    inset 0 0 80px rgba(0, 0, 0, 0.35),
+    0 30px 60px rgba(0, 0, 0, 0.35);
+}
+
+/* ── A bet on the table ─────────────────────────────────────────────────────
+   The mockup's `.bet`: one of the top three, dealt into the table's betting
+   area. The zone label (Banker / Player / Tie) is brass-LIGHT because the
+   table is the one ground where plain brass is under 4.5:1 for text.
+
+   The border is brass-light at 60% — 3.36:1 on the table, over the 3:1 a
+   control boundary needs, and the one place on this site an alpha brass is
+   allowed to carry a control's edge. */
+.pick {
+  background: transparent;
+  border: 1.5px solid rgba(230, 204, 146, 0.6);
+  border-radius: 16px;
+  transition: background-color 0.15s ease;
+}
+.pick:hover,
+.pick:focus-within {
+  background: rgba(255, 255, 255, 0.06);
+}
+.pick-name {
+  transition: color 0.15s ease;
+}
+.pick:hover .pick-name,
+.pick:focus-within .pick-name {
+  color: var(--color-brass-lt);
+}
+
+/* ── THE PLAYING CARD ───────────────────────────────────────────────────────
+   The mockup's `.cc`. Ivory stock, a 22px corner, and two shadows that are
+   doing different jobs: the first is OPAQUE and 2px, which is the thickness
+   of the card seen from slightly above, and the second is the soft drop onto
+   the felt. An opaque hairline shadow is the only honest way to draw card
+   stock — a blurred one at that size reads as a smudge.
+
+   On hover the card lifts 4px and rotates -0.4°, which is a card being
+   picked up. It is the only transform on the site. */
+.ccard {
+  position: relative;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border-radius: var(--radius-card);
+  box-shadow:
+    0 2px 0 #cdbf9e,
+    0 24px 40px rgba(0, 0, 0, 0.28);
+  transition: transform 0.2s ease;
+}
+.ccard:hover,
+.ccard:focus-within {
+  transform: translateY(-4px) rotate(-0.4deg);
+}
+
+/* The printed frame — a hairline 10px inside the edge, which every deck has
+   and which is what stops the ivory reading as a plain panel. `inset: 10px`
+   with a 15px radius keeps it concentric with the 22px outer corner.
+   `pointer-events: none` so it never eats a click on the card. */
+.ccard::after {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px solid var(--color-line);
+  border-radius: 15px;
+  pointer-events: none;
+}
+
+.cc-name {
+  transition: color 0.15s ease;
+}
+.ccard:hover .cc-name,
+.ccard:focus-within .cc-name {
+  color: var(--color-brand);
+}
+
+/* ── The corner index ───────────────────────────────────────────────────────
+   The mockup's `.idx`: the rating over its suit, printed top-left and again
+   bottom-right rotated 180°, which is how a real card prints its rank so it
+   reads from either end of the table. The second one is a `rotate(180deg)`
+   of the same markup rather than a mirrored copy, so the two can never drift.
+
+   `.cc-red` is set from the SUIT, which is derived from the casino's slug —
+   see the header note — so ♥ and ♦ print in oxblood and ♠ and ♣ in ink,
+   which is what a deck does. */
+.cc-idx {
+  font-family: var(--font-bodoni-moda), Didot, Georgia, serif;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-ink);
+}
+.cc-red .cc-idx {
+  color: var(--color-brand);
+}
+
+/* ── The logo well ──────────────────────────────────────────────────────────
+   The mockup's `.plate`, and the one place its drawing cannot be followed.
+
+   It draws a window cut through the card down to the FELT, with a brass bead
+   round it and a dashed brass line inside that. The felt cannot ship: roughly
+   half the operator artwork in this catalogue is a JPEG with its own WHITE
+   GROUND BAKED IN, and `object-contain` on a dark well renders every one of
+   those as a white rectangle floating in a green hole. Every dark site in
+   this network has hit the same thing and every one of them resolved it the
+   same way — a LITERAL white plate, which a baked-in white ground disappears
+   into and a transparent PNG sits on perfectly well.
+
+   White rather than the card's ivory, and the difference is the point: at
+   #FFFFFF against #F6F0E1 the well is barely a tone, so what reads is the
+   BRASS BEAD and the dashed line inside it — the mockup's own window, drawn
+   as a frame on the card's face instead of a hole through it.
+
+   The bead is `line-strong` #92805B, not brass: brass on white is 2.35:1 and
+   this is the boundary of the only object on the card that is not type. The
+   dashed inner line keeps the card hairline, because it is ornament inside a
+   frame rather than the frame itself. */
+.clogo {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1.5px var(--color-line-strong);
+}
+.clogo::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px dashed var(--color-line);
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+/* The leader's flag — the mockup's `.badge`, pinned over the card's top edge
+   so it crosses onto the felt. Oxblood is 1.41:1 against the felt, so the
+   pill would be a word with no shape around it out there; the brass hairline
+   in the second shadow ring is 5.38:1 and makes the shape read on both
+   grounds. The first ring is the felt itself, which is what punches the pill
+   out of the card's printed frame. */
+.flag {
+  background: var(--color-brand);
+  color: #ffffff;
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 3px var(--color-felt),
+    0 0 0 4px var(--color-brass);
+}
+
+/* The bonus panel between two rules on a card — the mockup's `.cbonus`.
+   A divider, not a control, so the 1.39:1 hairline is the right weight. */
+.cbonus {
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+}
+
+/* The two facts under it, parted by a vertical hairline the same weight. */
+.cfacts > * + * {
+  border-left: 1px solid var(--color-line);
+}
+
+/* ── THE CHIP ───────────────────────────────────────────────────────────────
+   The mockup's `.chip`: the edge spots of a casino chip drawn as a
+   `repeating-conic-gradient` — the colour for 15°, white for 15°, all the
+   way round — with a solid core inside it and an inset white bead on the
+   core, which is the moulded ring every chip has.
+
+   The colour arrives as `--c` from the markup (three tones by position; the
+   colour is rhythm and carries no meaning), and the core's text is always
+   white: 8.97:1 on the oxblood, 17.83 on the ink and 7.75 on the green. */
+.chip {
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: repeating-conic-gradient(var(--c) 0 15deg, #ffffff 15deg 30deg);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18);
+}
+.chip > i {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--c);
+  color: #ffffff;
+  font-style: normal;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+/* ── An offer ───────────────────────────────────────────────────────────────
+   The mockup's `.offer`: an ivory card led by its chip. 20px rather than the
+   card's 22px, because an offer is not a playing card and should not pretend
+   to be one — it has no index, no suit and no printed frame. */
+.offer {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border-radius: 20px;
+  transition: transform 0.2s ease;
+}
+.offer:hover,
+.offer:focus-within {
+  transform: translateY(-3px);
+}
+
+/* The picture well on an offer card that has artwork. The felt again, with
+   the brass bead, so artwork and chip sit on the same material. */
+.oimg {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--color-felt-raised), var(--color-felt-deep));
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1.5px var(--color-brass);
+}
+
+/* The kind of offer, printed on the chip's core. */
+.o-kind {
+  font-family: var(--font-figtree), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.1;
+}
+
+/* ── THE ROOMS ──────────────────────────────────────────────────────────────
+   The mockup's `.rooms` / `.room`: the bonus types as numbered rooms off the
+   salon. The container has no surface of its own — the rooms are doors in a
+   wall, not cards in a tray — so `.btypes` only lays them out.
+
+   A room's edge is a CONTROL's edge, so it is solid brass (5.38:1) and not
+   the mockup's 50% alpha (2.40). The faint white gradient is what lifts the
+   door off the felt without giving it a fill. */
+.btypes {
+  display: grid;
+}
+.btype {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent);
+  border: 1.5px solid var(--color-brass);
+  border-radius: 16px;
+  color: var(--color-cream);
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+.btype:hover,
+.btype:focus-visible {
+  border-color: var(--color-brass-lt);
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+/* The room number, in the italic Didone — "Room I" through "Room VI". */
+.btype-no {
+  font-family: var(--font-bodoni-moda), Didot, Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--color-brass);
+}
+
+/* The icon plate, drawn only where an uploaded icon is absent — see
+   BonusCategoryNav. A plate behind an uploaded mark renders as two nested
+   shapes in two colours. */
+.btype-ic {
+  display: grid;
+  place-items: center;
+  color: var(--color-brass);
+}
+
+/* The offer count on a room door and beside a bonus-group heading. */
+.btype-ct {
+  color: var(--color-cream-muted);
+  font-weight: 700;
+}
+
+/* ── The category tabs ──────────────────────────────────────────────────────
+   The mockup's `.tabs` / `.tab`: pills inside one deeper track, the current
+   one filled IVORY with ink on it — the card colour, which is what ties the
+   control to the thing it filters. Its count flips to the oxblood with white
+   on it (8.97:1), the one place oxblood is a fill on this site outside a
+   flag. */
+.tab-track {
+  background: var(--color-felt-deep);
+  border: 1.5px solid var(--color-brass);
+  border-radius: 999px;
+}
+.tab {
+  border-radius: 999px;
+  color: var(--color-cream-soft);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+.tab:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--color-paper);
+}
+.tab-on,
+.tab-on:hover {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+.tab-count {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: var(--color-cream);
+}
+.tab-on .tab-count {
+  background: var(--color-brand);
+  color: #ffffff;
+}
+
+/* ── THE HOUSE RULES ────────────────────────────────────────────────────────
+   The mockup's `.faq` / `.fq`: the whole FAQ on ONE ivory sheet — the card
+   of house rules a salon has on its wall — with the questions parted by the
+   same hairline a card uses between its rows, and no card per question.
+   Every sibling gives each question its own box; this one cannot, because
+   a wall of rules is one printed sheet.
+
+   The numbers are Roman, in the italic Didone, which is also how the rules
+   on that wall would be set. */
+.faq-sheet {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border-radius: 24px;
+}
+.fq {
+  border-bottom: 1px solid var(--color-line);
+}
+.fq:last-child {
+  border-bottom: 0;
+}
+.fq-q {
+  font-family: var(--font-bodoni-moda), Didot, Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--color-brand);
+}
+.fq summary:hover .fq-head {
+  color: var(--color-brand);
+}
+.fq-head {
+  transition: color 0.15s ease;
+}
+
+/* The open / closed mark — a `+` that rotates 45° into an × and fills with
+   the oxblood. Its resting edge belongs to a control, so it is the ink at
+   15.68:1 rather than the card hairline. */
+.pm {
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--color-ink);
+  border-radius: 50%;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+.fq[open] .pm {
+  transform: rotate(45deg);
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  color: #ffffff;
+}
+
+/* ── A method step, and the oxblood bonus bar ───────────────────────────────
+   `.deep-panel` is the mockup's `.bonusbar`: the one oxblood slab on the
+   site, carrying the offer in white at display size. White on it is 8.97:1.
+   `.step` is a plain ivory card for the three checks. */
+.deep-panel {
+  background: var(--color-brand);
+  color: #ffffff;
+  border-radius: 16px;
+}
+.step {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border-radius: var(--radius-card);
+  box-shadow:
+    0 2px 0 #cdbf9e,
+    0 18px 30px rgba(0, 0, 0, 0.22);
+}
+
+/* The glance sheet's rules on a detail page — dividers, so the hairline. */
+.glance {
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+}
+
+/* The banner well's suit watermark — the mockup's `.banner::before`, the
+   four suits set huge in brass at 12% in the bottom-right corner. The one
+   piece of pure ornament on the site, and `aria-hidden` by being a
+   pseudo-element at all. */
+.suit-mark::after {
+  content: '♠ ♥ ♣ ♦';
+  position: absolute;
+  right: 0.22em;
+  bottom: -0.12em;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(60px, 10vw, 130px);
+  letter-spacing: 0.1em;
+  line-height: 1;
+  color: rgba(230, 204, 146, 0.12);
+  pointer-events: none;
+}
+
+/* The italic brass emphasis inside a heading — the mockup's `h1 em` and
+   `h2 em`. On a Didone this is a true cursive cut, not a slant, so the
+   phrase changes voice rather than leaning over. NO underline bar: the face
+   is doing the work here and a rule under it would be a second device. */
+.hl {
+  font-style: italic;
+  color: var(--color-brass);
+}
+
+/* Kept so the shared class vocabulary holds across the network. On this site
+   a section is announced by its kicker's brass dash and its heading, and by
+   no rule at all — the cards below it are the structure. */
+.rule-double,
+.rule-head {
+  border-bottom: 0;
+}
+.slab,
+.hard-gold,
+.pull,
+.screen {
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.beat {
+  background: var(--color-brass);
+  border-radius: 50%;
+}
+.hatch,
+.ix-dots,
+.offer-scissors {
+  display: none;
+}
+.dropcap::first-letter {
+  font-size: inherit;
+  float: none;
+}
+.fq-answer::before {
+  content: none;
+}
+
+/* The one concession to motion preferences. Nothing here animates, so this
+   only has to stop the two transforms — the card being picked up off the
+   felt and the offer lifting. */
+@media (prefers-reduced-motion: reduce) {
+  .ccard,
+  .offer,
+  .pick,
+  .tab,
+  .btype,
+  .pm,
+  .cc-name,
+  .fq-head,
+  .btn-or,
+  .btn-ln,
+  .btn-gold,
+  .btn-on-dark {
+    transition: none;
+  }
+  .ccard:hover,
+  .ccard:focus-within,
+  .offer:hover,
+  .offer:focus-within {
+    transform: none;
+  }
+}
+
+/* ── Responsive safety net (all phones / tablets / laptops / large screens) ── */
+html {
+  -webkit-text-size-adjust: 100%; /* no iOS text auto-inflation on rotate */
+  scroll-behavior: smooth;
+}
+body {
+  overflow-x: clip; /* never scroll the page sideways; safe with the sticky header */
+}
+
+/* Hide the scrollbar on horizontally-scrollable rows (e.g. the tab strip). */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Scraped HTML content (casino / offer descriptions) must stay in its column
+   on small screens: wrap long words, cap media width, scroll wide tables. */
+.prose {
+  overflow-wrap: break-word;
+}
+
+/* ── Prose colours ──────────────────────────────────────────────────────────
+   EVERY PIECE OF PROSE ON THIS SITE IS ON AN IVORY SHEET — a casino's
+   description, an offer's terms, a legal page — so these are CARD colours
+   and not page colours. That is not a detail: this page is dark, and prose
+   left to the typography plugin's defaults would set near-black body text,
+   which on the felt is unreadable and on the ivory is merely wrong. Any new
+   route that renders `.prose` has to put an ivory sheet under it.
+
+   `prose-invert` must NOT be used here. The invert variables are given the
+   same values anyway, so a stray class degrades to "correct" rather than to
+   black-on-dark-green. */
+.prose {
+  --tw-prose-body: var(--color-ink-soft);
+  --tw-prose-headings: var(--color-ink);
+  --tw-prose-lead: var(--color-muted);
+  --tw-prose-links: var(--color-brand);
+  --tw-prose-bold: var(--color-ink);
+  --tw-prose-counters: var(--color-muted);
+  --tw-prose-bullets: var(--color-line-strong);
+  --tw-prose-hr: var(--color-line);
+  --tw-prose-quotes: var(--color-ink);
+  --tw-prose-quote-borders: var(--color-brand);
+  --tw-prose-captions: var(--color-faint);
+  --tw-prose-code: var(--color-ink);
+  --tw-prose-pre-code: var(--color-cream);
+  --tw-prose-pre-bg: var(--color-felt-deep);
+  --tw-prose-th-borders: var(--color-line-strong);
+  --tw-prose-td-borders: var(--color-line);
+  --tw-prose-invert-body: var(--color-ink-soft);
+  --tw-prose-invert-headings: var(--color-ink);
+  --tw-prose-invert-lead: var(--color-muted);
+  --tw-prose-invert-links: var(--color-brand);
+  --tw-prose-invert-bold: var(--color-ink);
+  --tw-prose-invert-counters: var(--color-muted);
+  --tw-prose-invert-bullets: var(--color-line-strong);
+  --tw-prose-invert-hr: var(--color-line);
+  --tw-prose-invert-quotes: var(--color-ink);
+  --tw-prose-invert-quote-borders: var(--color-brand);
+  --tw-prose-invert-captions: var(--color-faint);
+  --tw-prose-invert-code: var(--color-ink);
+  --tw-prose-invert-pre-code: var(--color-cream);
+  --tw-prose-invert-pre-bg: var(--color-felt-deep);
+  --tw-prose-invert-th-borders: var(--color-line-strong);
+  --tw-prose-invert-td-borders: var(--color-line);
+}
+
+/* And the colours again, directly on the elements. The variables above are
+   the plugin's own mechanism and they do work — but they route through two
+   indirections, and any link in that chain going missing lands an unstyled
+   heading on an ivory sheet. These rules do not depend on the chain at all.
+   `:where()` keeps specificity at zero, exactly as the plugin does, so a
+   utility class on the element still wins. */
+.prose {
+  color: var(--color-ink-soft);
+}
+.prose :where(h1, h2, h3, h4, h5, h6) {
+  color: var(--color-ink);
+  font-family: var(--font-bodoni-moda), Didot, Georgia, serif;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.prose :where(strong, b, th, dt) {
+  color: var(--color-ink);
+}
+.prose :where(a) {
+  color: var(--color-brand);
+}
+.prose :where(li)::marker,
+.prose :where(ol > li)::marker {
+  color: var(--color-muted);
+}
+.prose :where(blockquote) {
+  color: var(--color-ink);
+  border-inline-start-color: var(--color-brand);
+}
+.prose :where(hr) {
+  border-color: var(--color-line);
+}
+.prose :where(code) {
+  color: var(--color-ink);
+}
+.prose :where(img, video, iframe) {
+  max-width: 100%;
+  height: auto;
+}
+.prose :where(table) {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+}
+.prose :where(pre) {
+  overflow-x: auto;
+}
+
+/* ── Touch readability floor (phones and tablets, ≤1024px) ──
+   `text-xs` is 12px on desktop, where it suits eyebrow labels and footer
+   meta, but 12px body-ish text on a phone fails the 14px readability floor;
+   raise it to 14px there. Form fields go to 16px because iOS Safari zooms the
+   whole page when a smaller field takes focus. Width-based rather than
+   `pointer: coarse` on purpose: an iPad in a desktop-class browser reports a
+   fine pointer and would be missed. Unlayered on purpose so it wins over the
+   `@layer utilities` Tailwind classes regardless of source order.
+
+   ONLY sizes BELOW 14px belong in this list. The rule SETS 0.875rem, so
+   naming a 15px or 16px class here would SHRINK it on a phone.
+
+   SURVEY THE WHOLE SITE, not the home page: `text-[11px]` and
+   `text-[10.5px]` are used only by the detail pages and the logo strapline,
+   and on a sibling they shipped at 11px on a phone because the first version
+   of this list was written from the home page alone. */
+@media (max-width: 1024px) {
+  .text-xs,
+  .sm\:text-xs,
+  .md\:text-xs,
+  .lg\:text-xs,
+  .text-\[10\.5px\],
+  .text-\[11px\],
+  .text-\[11\.5px\],
+  .text-\[12px\],
+  .text-\[12\.5px\],
+  .text-\[13px\],
+  .text-\[13\.5px\] {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  input:not([type='checkbox']):not([type='radio']):not([type='range']),
+  select,
+  textarea {
+    font-size: 1rem;
+  }
+}
